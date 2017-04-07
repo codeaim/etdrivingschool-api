@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Provision AWS Web API Gateway and related AWS Lambda functions to support
+  the etdrivingschool-web project
+Parameters:
+  TwitterAccessTokenKeyParameter: {Description: Enter twitter access token key., Type: String}
+  TwitterAccessTokenSecretParameter: {Description: Enter twitter access token secret., Type: String}
+  TwitterConsumerKeyParameter: {Description: Enter twitter consumer key., Type: String}
+  TwitterConsumerSecretParameter: {Description: Enter twitter consumer secret., Type: String}
+Resources:
+  FunctionCreateSchema:
+    Properties:
+      Code: {S3Bucket: etdrivingschool-api, S3Key: deploy.zip}
+      Environment:
+        Variables:
+          ACCESS_TOKEN_KEY: {Ref: TwitterAccessTokenKeyParameter}
+          ACCESS_TOKEN_SECRET: {Ref: TwitterAccessTokenSecretParameter}
+          CONSUMER_KEY: {Ref: TwitterConsumerKeyParameter}
+          CONSUMER_SECRET: {Ref: TwitterConsumerSecretParameter}
+      FunctionName: etdrivingschool-tweet
+      Handler: index.tweet
+      MemorySize: 128
+      Role:
+        Fn::GetAtt: [LambdaExecutionRole, Arn]
+      Runtime: nodejs4.3
+      Timeout: 10
+    Type: AWS::Lambda::Function
+  LambdaExecutionRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: ['sts:AssumeRole']
+          Effect: Allow
+          Principal:
+            Service: [lambda.amazonaws.com]
+        Version: '2012-10-17'
+      ManagedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']
+      Path: /
+    Type: AWS::IAM::Role

@@ -3,9 +3,9 @@
 
 # Installation
 Clone the repository
-'''bash
+```bash
 git clone https://github.com/codeaim/etdrivingschool-api.git
-'''
+```
 
 Navigate into the project directory
 ```bash
